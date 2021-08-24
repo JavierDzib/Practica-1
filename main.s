@@ -96,21 +96,21 @@ MAIN:	    CALL	INIT
 			    
 LOOP:
 	    MOVF	PORTB, W, C
-	    ANDLW	0xF0	      ;a mask preserves RB0 and RB1 only
-	    MOVWF	TEMP, C		  ;data stored in reg TEMP
-	    RRNCF	TEMP, 1, 0  ;right shift
-	    RRNCF	TEMP, 1, 0  ;right shift
-	    RRNCF	TEMP, 1, 0  ;right shift
-	    RRNCF	TEMP, 1, 0  ;right shift
+	    ANDLW	0xF0	      		;a mask preserves more valuable bits
+	    MOVWF	TEMP, C		  	;data stored in reg TEMP
+	    RRNCF	TEMP, 1, 0  	  	;right shift
+	    RRNCF	TEMP, 1, 0  		;right shift
+	    RRNCF	TEMP, 1, 0  		;right shift
+	    RRNCF	TEMP, 1, 0  		;Here we use 4 rigth-shift register because we need to take the 4 more relevant bits as an individual number
 
-	    MOVF	PORTB,  W, C
-	    ANDLW	0x0F	;a mask preserves RB0 and RB1 only
-	    ADDWF	TEMP, W, C
-	    MOVWF	TEMP, C
+	    MOVF	PORTB,  W, C		;
+	    ANDLW	0x0F			;a mask preserves less vaulable bits
+	    ADDWF	TEMP, W, C		;adding more valuable bits to less valuable bits
+	    MOVWF	TEMP, C			;saving the result in TEMO
 
-	    MOVLW	0x00
-	    SUBWF	TEMP, W, C
-	    BZ		OUTPUT_0
+	    MOVLW	0x00		;cases for decoder using TEMP
+	    SUBWF	TEMP, W, C	;substracting WREG with TEMP
+	    BZ		OUTPUT_0	;if equals, then jumps, if not, keeps comparing
 	    MOVLW	0x01
 	    SUBWF	TEMP, W, C
 	    BZ		OUTPUT_1
@@ -160,9 +160,9 @@ LOOP:
 	    MOVWF	PORTD, C
 	    GOTO	LOOP
 	    
-OUTPUT_0:
-	    MOVLW	0b00111111
-	    MOVWF	PORTD, C
+OUTPUT_0:					;Decoder for hexadecimal character
+	    MOVLW	0b00111111		;setting the value of the character with the decoder
+	    MOVWF	PORTD, C		;sending to result to output
 	    GOTO	LOOP
 
 OUTPUT_1:
